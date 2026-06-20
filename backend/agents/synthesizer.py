@@ -3,8 +3,8 @@ from config import gemini_client
 
 def synthesize_rag_response(query: str, retrieved_chunks: list[dict]) -> dict:
     """
-    Synthesizes a response using Gemini based on the retrieved context documents.
-    Consolidates response generation and confidence evaluation in a single API call.
+    Synthesizes a response locally using Ollama based on the retrieved context documents.
+    Consolidates response generation and confidence evaluation in a single local call.
     """
     if not retrieved_chunks:
         return {
@@ -38,36 +38,34 @@ def synthesize_rag_response(query: str, retrieved_chunks: list[dict]) -> dict:
     )
     
     try:
-        response = gemini_client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=f"User Query: {query}\n\n{context_str}",
-            config={
-                "system_instruction": system_instruction,
-                "response_mime_type": "application/json",
-                "temperature": 0.1,
-            }
+        from ollama_helper import generate_ollama_chat
+        
+        response = generate_ollama_chat(
+            messages=[{"role": "user", "content": f"User Query: {query}\n\n{context_str}"}],
+            system_instruction=system_instruction,
+            json_mode=True
         )
-        result = json.loads(response.text.strip())
+        result = json.loads(response.strip())
         return {
             "answer": result.get("answer", ""),
             "confidence": result.get("confidence_score", 90),
-            "rationale": result.get("rationale", "Grounded clinical RAG extraction.")
+            "rationale": result.get("rationale", "Local clinical RAG extraction.")
         }
     except Exception as e:
-        print(f"[RAG Synthesis] Error generating response: {e}")
+        print(f"[RAG Synthesis] Error generating response locally: {e}")
         return {
-            "answer": "Error synthesizing response from reference documents.",
+            "answer": "Error synthesizing response locally from reference documents.",
             "confidence": 30,
-            "rationale": f"API synthesis failed: {str(e)}"
+            "rationale": f"Local synthesis failed: {str(e)}"
         }
 
 def synthesize_final_response(route: str, query: str, agent_output: dict) -> dict:
     """
     Combines agent outputs, structures results, and appends legal disclaimers.
     Optimized to use ZERO extra API calls (all safety and confidence evaluations
-    are handled inline by the specialist sub-agents).
+    are handled inline locally by the specialist sub-agents).
     """
-    print(f"[Response Synthesizer] Synthesizing final response for route: {route}")
+    print(f"[Response Synthesizer] Synthesizing final response locally for route: {route}")
     
     final_answer = ""
     confidence = 85

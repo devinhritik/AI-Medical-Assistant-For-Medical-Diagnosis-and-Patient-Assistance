@@ -11,7 +11,7 @@ QDRANT_PORT = int(os.getenv("QDRANT_PORT", "6333"))
 QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION", "medical_knowledge")
 
 if not GEMINI_API_KEY:
-    raise ValueError("GEMINI_API_KEY is not set in the environment or .env file.")
+    print("[WARNING] GEMINI_API_KEY is not set. Gemini endpoints will be disabled; local Ollama must be running.")
 
 # Initialize the Gemini GenAI client
 # The new google-genai SDK uses genai.Client

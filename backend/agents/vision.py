@@ -4,10 +4,10 @@ from config import gemini_client
 
 def analyze_medical_image(image: Image.Image, query: str = "") -> dict:
     """
-    Analyzes a medical image (X-ray, MRI, CT, skin lesion) using Gemini Multimodal Vision.
-    Consolidates image analysis, safety checks, and confidence rating in a single call.
+    Analyzes a medical image (X-ray, MRI, CT, skin lesion) using local Ollama moondream.
+    Consolidates image analysis, safety checks, and confidence rating in a single local call.
     """
-    print("[Vision Agent] Running medical image analysis...")
+    print("[Vision Agent] Running medical image analysis locally with Ollama...")
     
     system_instruction = (
         "You are an AI Medical Imaging Research Assistant. Your role is to analyze medical scans "
@@ -30,28 +30,27 @@ def analyze_medical_image(image: Image.Image, query: str = "") -> dict:
     user_prompt = query if query.strip() else "Analyze this medical scan image and describe the key findings."
     
     try:
-        response = gemini_client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=[image, user_prompt],
-            config={
-                "system_instruction": system_instruction,
-                "response_mime_type": "application/json",
-                "temperature": 0.1,
-            }
+        from ollama_helper import generate_ollama_vision
+        
+        response = generate_ollama_vision(
+            image=image,
+            prompt=user_prompt,
+            system_instruction=system_instruction,
+            json_mode=True
         )
         
-        result = json.loads(response.text.strip())
+        result = json.loads(response.strip())
         return {
             "analysis": result.get("analysis", ""),
             "confidence": result.get("confidence_score", 85),
-            "rationale": result.get("rationale", "Multimodal visual diagnostic analysis."),
+            "rationale": result.get("rationale", "Local multimodal visual diagnostic analysis."),
             "agent": "Vision Agent"
         }
     except Exception as e:
-        print(f"[Vision Agent] Error in image analysis: {e}")
+        print(f"[Vision Agent] Error in local image analysis: {e}")
         return {
-            "analysis": f"Error: Failed to process medical image: {str(e)}",
+            "analysis": f"Error: Failed to process medical image locally: {str(e)}",
             "confidence": 40,
-            "rationale": "Fallback triggered due to image analysis generation failure.",
+            "rationale": "Fallback triggered due to local image analysis generation failure.",
             "agent": "Vision Agent"
         }
