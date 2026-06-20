@@ -207,7 +207,7 @@ function App() {
         <div className="header-status-container">
           <div className="status-badge gemini">
             <span className="status-indicator-dot pulse"></span>
-            Gemini Flash v2.5 Online
+            Ollama Offline Stack
           </div>
           <div className="status-badge qdrant">
             <span className="status-indicator-dot pulse"></span>
@@ -279,7 +279,7 @@ function App() {
               <span>Diagnostic Capability</span>
             </div>
             <p className="panel-description">
-              Attach an image in chat to activate Gemini Multimodal Vision analysis:
+              Attach an image in chat to activate local Moondream Vision analysis:
             </p>
             <div className="capability-grid">
               <div className="capability-item">

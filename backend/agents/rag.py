@@ -2,15 +2,11 @@ from config import get_qdrant_client, gemini_client, QDRANT_COLLECTION
 
 def get_query_embedding(query: str) -> list[float]:
     """
-    Generates embedding vector for the search query using gemini-embedding-2.
+    Generates embedding vector for the search query using local Ollama nomic-embed-text model.
     """
-    if not gemini_client:
-        raise ValueError("Gemini client is not initialized.")
-    response = gemini_client.models.embed_content(
-        model="gemini-embedding-2",
-        contents=query
-    )
-    return response.embeddings[0].values
+    from ollama_helper import get_ollama_embeddings
+    return get_ollama_embeddings(query)
+
 
 def retrieve_relevant_documents(query: str, top_k: int = 4) -> dict:
     """

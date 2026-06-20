@@ -24,3 +24,9 @@ except Exception as e:
 def get_qdrant_client():
     from qdrant_client import QdrantClient
     return QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
+
+# Local Ollama model configurations
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
+OLLAMA_CHAT_MODEL = os.getenv("OLLAMA_CHAT_MODEL", "gemma2:2b")
+OLLAMA_EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL", "nomic-embed-text")
+OLLAMA_VISION_MODEL = os.getenv("OLLAMA_VISION_MODEL", "moondream")
