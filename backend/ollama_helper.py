@@ -4,10 +4,11 @@ import base64
 import io
 from PIL import Image
 
-OLLAMA_URL = "http://localhost:11434"
-CHAT_MODEL = "gemma2:2b"
-EMBED_MODEL = "nomic-embed-text"
-VISION_MODEL = "moondream"
+from config import OLLAMA_URL, OLLAMA_CHAT_MODEL, OLLAMA_EMBED_MODEL, OLLAMA_VISION_MODEL
+
+CHAT_MODEL = OLLAMA_CHAT_MODEL
+EMBED_MODEL = OLLAMA_EMBED_MODEL
+VISION_MODEL = OLLAMA_VISION_MODEL
 
 def get_ollama_embeddings(text: str) -> list[float]:
     """
