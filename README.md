@@ -2,7 +2,7 @@
 
 MedAssist AI is an end-to-end, LLM-powered Multi-Agent system for medical imaging research and patient assistance. It routes user inputs dynamically to custom-built sub-agents for multimodal scan analysis, Retrieval-Augmented Generation (RAG) over clinical reference documents, or general medical dialogue.
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
               User
@@ -43,7 +43,7 @@ Gemini Vision   RAG Retrieval   Chat Agent
 
 ---
 
-## 🚀 Step-by-Step Installation & Run Guide
+##  Step-by-Step Installation & Run Guide
 
 ### Step 1: Start Qdrant Vector Database (Docker)
 Ensure Docker Desktop is running on your machine, then spin up the Qdrant container:
@@ -92,14 +92,10 @@ Open `http://localhost:5173` in your web browser to access the interactive MedAs
 
 ---
 
-## 📚 How to Ingest PDF Guidelines (RAG)
+##  How to Ingest PDF Guidelines (RAG)
 1. Using the **Reference Literature Ingest** panel on the left side of the dashboard, upload any clinical guidelines PDF (e.g. Brain Tumor Guidelines, Chest X-ray Manuals).
 2. The UI will show a progress indicator while **Docling** parses the PDF layout, extracts text tables, embeds them via Gemini, and upserts them to the Qdrant vector database.
 3. Once ingested, ask the assistant technical or factual questions. The **Router** will send the query to the **RAG Agent**, which queries Qdrant and returns cited references.
 
 ---
 
-## 🛡️ CI/CD pipeline
-Any updates pushed to GitHub will trigger the workflow defined in `.github/workflows/ci.yml`. This automatically:
-*   Checks the Python code for syntax or import errors.
-*   Attempts a production build of the React frontend to verify type/compile safety.
