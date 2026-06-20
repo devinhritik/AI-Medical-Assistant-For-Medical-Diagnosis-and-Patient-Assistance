@@ -38,12 +38,20 @@ def synthesize_rag_response(query: str, retrieved_chunks: list[dict]) -> dict:
     )
     
     try:
+        from pydantic import BaseModel
+        
+        class RagResponse(BaseModel):
+            answer: str
+            confidence_score: int
+            rationale: str
+
         response = gemini_client.models.generate_content(
             model="gemini-2.5-flash",
             contents=f"User Query: {query}\n\n{context_str}",
             config={
                 "system_instruction": system_instruction,
                 "response_mime_type": "application/json",
+                "response_schema": RagResponse,
                 "temperature": 0.1,
             }
         )

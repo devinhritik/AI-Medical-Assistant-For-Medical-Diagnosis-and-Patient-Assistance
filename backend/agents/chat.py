@@ -35,12 +35,20 @@ def handle_conversational_chat(query: str, history: list[dict] = None) -> dict:
     contents.append({"role": "user", "parts": [{"text": query}]})
     
     try:
+        from pydantic import BaseModel
+        
+        class ChatResponse(BaseModel):
+            response: str
+            confidence_score: int
+            rationale: str
+
         response = gemini_client.models.generate_content(
             model="gemini-2.5-flash",
             contents=contents,
             config={
                 "system_instruction": system_instruction,
                 "response_mime_type": "application/json",
+                "response_schema": ChatResponse,
                 "temperature": 0.3,
             }
         )

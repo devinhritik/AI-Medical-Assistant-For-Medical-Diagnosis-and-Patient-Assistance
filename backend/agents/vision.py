@@ -30,12 +30,20 @@ def analyze_medical_image(image: Image.Image, query: str = "") -> dict:
     user_prompt = query if query.strip() else "Analyze this medical scan image and describe the key findings."
     
     try:
+        from pydantic import BaseModel
+        
+        class VisionResponse(BaseModel):
+            analysis: str
+            confidence_score: int
+            rationale: str
+
         response = gemini_client.models.generate_content(
             model="gemini-2.5-flash",
             contents=[image, user_prompt],
             config={
                 "system_instruction": system_instruction,
                 "response_mime_type": "application/json",
+                "response_schema": VisionResponse,
                 "temperature": 0.1,
             }
         )
