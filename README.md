@@ -1,6 +1,6 @@
-# MedAssist AI: Multi-Agent Medical Diagnosis & Research Assistant
+# AI Medical Assistant For Medical Diagnosis and Patient Assistance
 
-MedAssist AI is an end-to-end, LLM-powered Multi-Agent system for medical imaging research and patient assistance. It routes user inputs dynamically to custom-built sub-agents for multimodal scan analysis, Retrieval-Augmented Generation (RAG) over clinical reference documents, or general medical dialogue.
+AI Medical Assistant is an end-to-end, LLM-powered Multi-Agent system for medical imaging research and patient assistance. It routes user inputs dynamically to custom-built sub-agents for multimodal scan analysis, Retrieval-Augmented Generation (RAG) over clinical reference documents, or general medical dialogue.
 
 ##  Architecture
 
