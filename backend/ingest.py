@@ -5,10 +5,10 @@ from pathlib import Path
 from qdrant_client.models import Distance, VectorParams, PointStruct
 from config import get_qdrant_client, gemini_client, QDRANT_COLLECTION
 
-def init_qdrant_collection(vector_size: int = 3072):
+def init_qdrant_collection(vector_size: int = 768):
     """
     Ensures that the Qdrant collection exists. 
-    Gemini's 'gemini-embedding-2' produces vectors of size 3072.
+    Ollama's 'nomic-embed-text' produces vectors of size 768.
     """
     client = get_qdrant_client()
     try:
@@ -95,18 +95,11 @@ def chunk_markdown_text(text: str, max_chunk_size: int = 1200, overlap: int = 20
 
 def embed_text(text: str) -> list[float]:
     """
-    Calls Google Gemini's 'gemini-embedding-2' model to generate
-    a dense vector representation (3072 dimensions) of the text.
+    Calls local Ollama nomic-embed-text model to generate
+    a dense vector representation (768 dimensions) of the text.
     """
-    if not gemini_client:
-        raise ValueError("Gemini client is not initialized.")
-        
-    response = gemini_client.models.embed_content(
-        model="gemini-embedding-2",
-        contents=text
-    )
-    # The API returns a list of embeddings. Get values of the first one.
-    return response.embeddings[0].values
+    from ollama_helper import get_ollama_embeddings
+    return get_ollama_embeddings(text)
 
 def ingest_file(file_path: str):
     """
@@ -129,7 +122,7 @@ def ingest_file(file_path: str):
     print(f"Split document into {len(chunks)} text chunks.")
     
     # 3. Connect to Qdrant & ensure collection exists
-    init_qdrant_collection(vector_size=3072)
+    init_qdrant_collection(vector_size=768)
     q_client = get_qdrant_client()
     
     points = []

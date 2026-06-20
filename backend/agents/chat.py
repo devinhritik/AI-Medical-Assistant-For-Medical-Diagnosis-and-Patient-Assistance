@@ -5,9 +5,9 @@ def handle_conversational_chat(query: str, history: list[dict] = None) -> dict:
     """
     Handles conversational, patient-care, triage or general medical questions.
     Consolidates response generation, safety auditing, and confidence evaluation
-    into a single API call to minimize quota consumption.
+    locally using Ollama with gemma2:2b.
     """
-    print(f"[Chat Agent] Processing conversational query: '{query}'")
+    print(f"[Chat Agent] Processing conversational query with local model: '{query}'")
     
     system_instruction = (
         "You are an empathetic, professional AI Medical Chat Assistant designed to support patients "
@@ -26,27 +26,26 @@ def handle_conversational_chat(query: str, history: list[dict] = None) -> dict:
         "- 'rationale': A one-sentence explanation of why you assigned this confidence score."
     )
     
-    contents = []
+    # Format message history list for Ollama
+    formatted_messages = []
     if history:
         for msg in history[-4:]: # Keep last 4 messages for context
-            role = "user" if msg.get("role") == "user" else "model"
-            contents.append({"role": role, "parts": [{"text": msg.get("text", "")}]})
+            role = "assistant" if msg.get("role") == "assistant" else "user"
+            formatted_messages.append({"role": role, "content": msg.get("text", "")})
             
-    contents.append({"role": "user", "parts": [{"text": query}]})
+    formatted_messages.append({"role": "user", "content": query})
     
     try:
-        response = gemini_client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=contents,
-            config={
-                "system_instruction": system_instruction,
-                "response_mime_type": "application/json",
-                "temperature": 0.3,
-            }
+        from ollama_helper import generate_ollama_chat
+        
+        response = generate_ollama_chat(
+            messages=formatted_messages,
+            system_instruction=system_instruction,
+            json_mode=True
         )
         
         # Parse JSON response
-        result = json.loads(response.text.strip())
+        result = json.loads(response.strip())
         return {
             "response": result.get("response", ""),
             "confidence": result.get("confidence_score", 90),
@@ -54,10 +53,10 @@ def handle_conversational_chat(query: str, history: list[dict] = None) -> dict:
             "agent": "Chat Agent"
         }
     except Exception as e:
-        print(f"[Chat Agent] Error handling chat query: {e}")
+        print(f"[Chat Agent] Error handling chat query locally: {e}")
         return {
             "response": f"I apologize, but I encountered an error processing your request: {str(e)}",
             "confidence": 50,
-            "rationale": "Fallback triggered due to agent generation failure.",
+            "rationale": "Fallback triggered due to local agent generation failure.",
             "agent": "Chat Agent"
         }

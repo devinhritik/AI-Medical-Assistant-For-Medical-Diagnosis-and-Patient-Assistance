@@ -25,24 +25,22 @@ def route_query(query: str, has_image: bool = False) -> str:
     )
     
     try:
-        response = gemini_client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=query,
-            config={
-                "system_instruction": system_prompt,
-                "response_mime_type": "application/json",
-                "temperature": 0.0, # High determinism
-            }
+        from ollama_helper import generate_ollama_chat
+        
+        response = generate_ollama_chat(
+            messages=[{"role": "user", "content": query}],
+            system_instruction=system_prompt,
+            json_mode=True
         )
         # Parse JSON output from model
-        result = json.loads(response.text.strip())
+        result = json.loads(response.strip())
         route = result.get("route", "CHAT").upper()
         
         # Guard against unexpected outputs
         if route not in ["RAG", "CHAT"]:
             route = "CHAT"
             
-        print(f"[Router Agent] Routing to: {route} (Reason: Classified by LLM)")
+        print(f"[Router Agent] Routing to: {route} (Reason: Classified by local model)")
         return route
     except Exception as e:
         print(f"[Router Agent] Error routing query: {e}. Defaulting to CHAT.")
